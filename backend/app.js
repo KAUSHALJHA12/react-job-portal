@@ -11,14 +11,16 @@ import fileUpload from "express-fileupload";
 
 const app = express();
 config({ path: "./config/config.env" });
+app.set("trust proxy", 1);
 
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL],
-    method: ["GET", "POST", "DELETE", "PUT"],
+    methods: ["GET", "POST", "DELETE", "PUT"], // ✅ CORRECT
     credentials: true,
   })
 );
+
 
 app.use(cookieParser());
 app.use(express.json());
