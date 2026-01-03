@@ -15,11 +15,12 @@ app.set("trust proxy", 1);
 
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL],
-    methods: ["GET", "POST", "DELETE", "PUT"], // ✅ CORRECT
+    origin: "https://react-job-portal-omega.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
+
 
 
 app.use(cookieParser());
