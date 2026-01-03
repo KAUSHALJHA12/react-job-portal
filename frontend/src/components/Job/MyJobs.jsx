@@ -1,4 +1,4 @@
-import axios from "axios";
+import API from "../../utils/api";
 import React, { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaCheck } from "react-icons/fa6";
@@ -16,10 +16,7 @@ const MyJobs = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const { data } = await axios.get(
-          "http://localhost:4000/api/v1/job/getmyjobs",
-          { withCredentials: true }
-        );
+        const { data } = await API.get("/api/v1/job/getmyjobs");
         setMyJobs(data.myJobs);
       } catch (error) {
         toast.error(error.response.data.message);
@@ -45,34 +42,37 @@ const MyJobs = () => {
 
   //Function For Updating The Job
   const handleUpdateJob = async (jobId) => {
+  try {
     const updatedJob = myJobs.find((job) => job._id === jobId);
-    await axios
-      .put(`http://localhost:4000/api/v1/job/update/${jobId}`, updatedJob, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        toast.success(res.data.message);
-        setEditingMode(null);
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
-  };
+
+    const res = await API.put(
+      `/api/v1/job/update/${jobId}`,
+      updatedJob
+    );
+
+    toast.success(res.data.message);
+    setEditingMode(null);
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Update failed");
+  }
+};
+
 
   //Function For Deleting Job
   const handleDeleteJob = async (jobId) => {
-    await axios
-      .delete(`http://localhost:4000/api/v1/job/delete/${jobId}`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        toast.success(res.data.message);
-        setMyJobs((prevJobs) => prevJobs.filter((job) => job._id !== jobId));
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
-  };
+  try {
+    const res = await API.delete(`/api/v1/job/delete/${jobId}`);
+
+    toast.success(res.data.message);
+
+    setMyJobs((prevJobs) =>
+      prevJobs.filter((job) => job._id !== jobId)
+    );
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Delete failed");
+  }
+};
+
 
   const handleInputChange = (jobId, field, value) => {
     // Update the job object in the jobs state with the new value

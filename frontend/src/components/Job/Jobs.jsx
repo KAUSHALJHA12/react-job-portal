@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import axios from "axios";
+import API from "../../utils/api";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../../main";
 
@@ -9,13 +9,14 @@ const Jobs = () => {
   const navigateTo = useNavigate();
   useEffect(() => {
     try {
-      axios
-        .get("http://localhost:4000/api/v1/job/getall", {
-          withCredentials: true,
-        })
-        .then((res) => {
-          setJobs(res.data);
-        });
+      API.get("/api/v1/job/getall")
+  .then((res) => {
+    setJobs(res.data);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
     } catch (error) {
       console.log(error);
     }

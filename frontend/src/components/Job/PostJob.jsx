@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import axios from "axios";
+import API from "../../utils/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../../main";
@@ -29,42 +29,36 @@ const PostJob = () => {
       setSalaryTo("");
       setFixedSalary("");
     }
-    await axios
-      .post(
-        "http://localhost:4000/api/v1/job/post",
-        fixedSalary.length >= 4
-          ? {
-              title,
-              description,
-              category,
-              country,
-              city,
-              location,
-              fixedSalary,
-            }
-          : {
-              title,
-              description,
-              category,
-              country,
-              city,
-              location,
-              salaryFrom,
-              salaryTo,
-            },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((res) => {
-        toast.success(res.data.message);
-      })
-      .catch((err) => {
-        toast.error(err.response.data.message);
-      });
+    await API.post(
+  "/api/v1/job/post",
+  fixedSalary.length >= 4
+    ? {
+        title,
+        description,
+        category,
+        country,
+        city,
+        location,
+        fixedSalary,
+      }
+    : {
+        title,
+        description,
+        category,
+        country,
+        city,
+        location,
+        salaryFrom,
+        salaryTo,
+      }
+)
+  .then((res) => {
+    toast.success(res.data.message);
+  })
+  .catch((err) => {
+    toast.error(err.response?.data?.message);
+  });
+
   };
 
   const navigateTo = useNavigate();

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../../main";
-import axios from "axios";
+import API from "../../utils/api";
+
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import ResumeModal from "./ResumeModal";
@@ -15,49 +16,45 @@ const MyApplications = () => {
   const navigateTo = useNavigate();
 
   useEffect(() => {
+  const fetchApplications = async () => {
     try {
       if (user && user.role === "Employer") {
-        axios
-          .get("http://localhost:4000/api/v1/application/employer/getall", {
-            withCredentials: true,
-          })
-          .then((res) => {
-            setApplications(res.data.applications);
-          });
+        const res = await API.get("/api/v1/application/employer/getall");
+        setApplications(res.data.applications);
       } else {
-        axios
-          .get("http://localhost:4000/api/v1/application/jobseeker/getall", {
-            withCredentials: true,
-          })
-          .then((res) => {
-            setApplications(res.data.applications);
-          });
+        const res = await API.get("/api/v1/application/jobseeker/getall");
+        setApplications(res.data.applications);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(
+        error.response?.data?.message || "Failed to load applications"
+      );
     }
-  }, [isAuthorized]);
+  };
+
+  if (isAuthorized) {
+    fetchApplications();
+  }
+}, [isAuthorized, user]);
 
   if (!isAuthorized) {
     navigateTo("/");
   }
 
-  const deleteApplication = (id) => {
-    try {
-      axios
-        .delete(`http://localhost:4000/api/v1/application/delete/${id}`, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          toast.success(res.data.message);
-          setApplications((prevApplication) =>
-            prevApplication.filter((application) => application._id !== id)
-          );
-        });
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
+  const deleteApplication = async (id) => {
+  try {
+    const res = await API.delete(`/api/v1/application/delete/${id}`);
+    toast.success(res.data.message);
+
+    setApplications((prev) =>
+      prev.filter((application) => application._id !== id)
+    );
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message || "Failed to delete application"
+    );
+  }
+};
 
   const openModal = (imageUrl) => {
     setResumeImageUrl(imageUrl);
