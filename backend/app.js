@@ -16,12 +16,16 @@ app.set("trust proxy", 1);
 app.use(
   cors({
     origin: "https://react-job-portal-omega.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-app.options("*", cors());
+app.options("*", cors({
+  origin: "https://react-job-portal-omega.vercel.app",
+  credentials: true,
+}));
 
 
 
